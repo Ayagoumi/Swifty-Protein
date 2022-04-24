@@ -8,6 +8,7 @@ export function AppWrapper({ children }) {
   return (
     <LigandContext.Provider value={{
       state: {
+        data: require('../assets/ligands.json'),
         ligandmode: ligandmode,
         setLigandMode: setLigandMode,
       },

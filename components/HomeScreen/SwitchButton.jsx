@@ -3,7 +3,7 @@ import { useRef, useEffect, useState, useContext } from 'react';
 import { LigandContext } from "../../context/state";
 
 export default function SwitchButton({ addedStyle, items }) {
-  const [indicatorTransition, setIndicatorTransition] = useState(45);
+  const [indicatorTransition, setIndicatorTransition] = useState(null);
   const translation = useRef(new Animated.Value(0)).current;
   const [buttonWidth, setButtonWidth] = useState(0);
   const value = useContext(LigandContext);
@@ -12,7 +12,7 @@ export default function SwitchButton({ addedStyle, items }) {
 
   useEffect(() => {
     Animated.timing(translation, {
-      toValue: 55 * ligandmode,
+      toValue: 65 * ligandmode,
       duration: 300,
       useNativeDriver: true,
       easing: Easing.ease,
@@ -44,7 +44,7 @@ export default function SwitchButton({ addedStyle, items }) {
           >
             <View
               style={{
-                width: 55,
+                width: 65,
                 height: 35,
                 alignItems: 'center',
                 justifyContent: 'center',

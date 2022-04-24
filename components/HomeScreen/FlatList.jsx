@@ -2,14 +2,17 @@ import { View, FlatList, StyleSheet, Text, Image, Pressable, Alert } from 'react
 import { useEffect, useState, useRef } from 'react';
 import Feather from "react-native-vector-icons/Feather";
 import * as Network from 'expo-network';
+import { atomsParse } from "../../Helpers/atomsParse";
+import { connectParse } from "../../Helpers/connectParse";
 import axios from 'axios';
 
 export default function FlatListComponent({ navigation, DATA }) {
-  const [scrollEnabled, setScrollEnabled] = useState(true);
-  const [flatHeight, setFlatHeight] = useState({
-    flatContainer: 0,
-    flatList: 0,
-  })
+  // const [scrollEnabled, setScrollEnabled] = useState(true);
+  // const [flatHeight, setFlatHeight] = useState({
+  //   flatContainer: 0,
+  //   flatList: 0,
+  // })
+  console.log("here1");
 
   const checkNetwork = async (ligand) => {
     await Network.getNetworkStateAsync().then(res => {
@@ -18,7 +21,8 @@ export default function FlatListComponent({ navigation, DATA }) {
         axios(url1)
           .then((res) => {
             if (res.data) {
-              navigation.navigate('Ligand', { name: ligand, data: res.data });
+              const data = {atoms: atomsParse(res.data), connects: connectParse(res.data)};
+              navigation.navigate('Ligand', { name: ligand, data: data });
             }
           })
           .catch((er) => alert(er));
@@ -64,39 +68,39 @@ export default function FlatListComponent({ navigation, DATA }) {
     )
   }
 
-  const onLayoutFlatList = (event) => {
-    const height = event.nativeEvent.layout.height;
-    setFlatHeight({
-      ...flatHeight,
-      flatList: height,
-    })
-  }
+  // const onLayoutFlatList = (event) => {
+  //   const height = event.nativeEvent.layout.height;
+  //   setFlatHeight({
+  //     ...flatHeight,
+  //     flatList: height,
+  //   })
+  // }
 
-  const onLayoutContainer = (event) => {
-    const height = event.nativeEvent.layout.height;
-    setFlatHeight({
-      ...flatHeight,
-      flatContainer: height,
-    })
-  }
+  // const onLayoutContainer = (event) => {
+  //   const height = event.nativeEvent.layout.height;
+  //   setFlatHeight({
+  //     ...flatHeight,
+  //     flatContainer: height,
+  //   })
+  // }
 
-  useEffect(() => {
-    if (flatHeight.flatContainer > 61 * DATA.length || DATA.length <= 0)
-      setScrollEnabled(false);
-    else
-      setScrollEnabled(true);;
-  }, [flatHeight, DATA.length])
+  // useEffect(() => {
+  //   if (flatHeight.flatContainer > 61 * DATA.length || DATA.length <= 0)
+  //     setScrollEnabled(false);
+  //   else
+  //     setScrollEnabled(true);;
+  // }, [flatHeight, DATA.length])
 
   return (
-    <View style={styles.ligandsContainer} onLayout={onLayoutContainer} >
+    <View style={styles.ligandsContainer} /*onLayout={onLayoutContainer}*/ >
       <FlatList
-        onLayout={onLayoutFlatList}
+        // onLayout={onLayoutFlatList}
         data={DATA}
         renderItem={renderItem}
         keyExtractor={(item) => DATA.indexOf(item)}
         initialNumToRender={10}
         showsVerticalScrollIndicator={false}
-        scrollEnabled={scrollEnabled}
+        // scrollEnabled={scrollEnabled}
         ListEmptyComponent={ListEmptyComponent}
         contentContainerStyle={{ flexGrow: 1 }}
       />
