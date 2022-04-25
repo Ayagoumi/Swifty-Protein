@@ -6,6 +6,7 @@ export const LigandContext = createContext();
 export function AppWrapper({ children }) {
   const [ligandmode, setLigandMode] = useState(0);
   const [colorMode, setColorMode] = useState(0);
+  const [ligand, setLigand] = useState("");
   const orientation = useOrientation();
 
   return (
@@ -17,6 +18,8 @@ export function AppWrapper({ children }) {
         colorMode: colorMode,
         setColorMode: setColorMode,
         orientation: orientation,
+        ligand: ligand,
+        setLigand: setLigand,
       },
     }}>
       {children}

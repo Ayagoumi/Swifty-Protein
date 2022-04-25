@@ -1,13 +1,15 @@
 import { View, FlatList, StyleSheet, Text, Image, Pressable, Alert, ActivityIndicator } from 'react-native';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import Feather from "react-native-vector-icons/Feather";
 import * as Network from 'expo-network';
 import { atomsParse } from "../../Helpers/atomsParse";
 import { connectParse } from "../../Helpers/connectParse";
 import axios from 'axios';
+import { LigandContext } from "../../context/state";
 
 export default function FlatListComponent({ navigation, DATA }) {
   const [loading, setLoading] = useState(null);
+  const value = useContext(LigandContext);
 
   const checkNetwork = async (ligand) => {
     await Network.getNetworkStateAsync().then(res => {
@@ -19,6 +21,7 @@ export default function FlatListComponent({ navigation, DATA }) {
             if (res.data) {
               const data = { atoms: atomsParse(res.data), connects: connectParse(res.data) };
               setLoading(false);
+              value.state.setLigand(ligand);
               navigation.navigate('Ligand', { name: ligand, data: data });
             }
           })
