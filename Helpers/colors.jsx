@@ -6,7 +6,7 @@ export const colors = {
   B: { rasmol: '#FFB5B5', jmol: '#00FF00' },
   C: { rasmol: '#909090', jmol: '#C8C8C8' },
   N: { rasmol: '#3050F8', jmol: '#8F8FFF' },
-  O: { rasmol: '#FF0D0D', jmol: '#F00000' },
+  O: { rasmol: '#FF0D0D', jmol: '#89c472' },
   F: { rasmol: '#90E050', jmol: '#DAA520' },
   Ne: { rasmol: '#B3E3F5', jmol: '#FF1493' },
   Na: { rasmol: '#AB5CF2', jmol: '#0000FF' },
