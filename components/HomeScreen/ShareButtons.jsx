@@ -1,17 +1,12 @@
 import {
-  StyleSheet,
   TouchableOpacity,
   View,
-  Text,
-  Dimensions,
-  ActivityIndicator,
   SafeAreaView,
-  TouchableWithoutFeedback,
   Alert,
   Share
 } from "react-native";
-import Feather from "react-native-vector-icons/Feather";
 import * as MediaLibrary from "expo-media-library";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 export default function ShareButtons({ renderRef, viewShotRef }) {
 
@@ -19,7 +14,6 @@ export default function ShareButtons({ renderRef, viewShotRef }) {
     try {
       const res = await viewShotRef.current.capture();
       Share.share({ url: res });
-      // await Sharing.shareAsync(res, { dialogTitle: "Share this image" });
       let result = await MediaLibrary.requestPermissionsAsync(true);
       if (result.status === "granted") {
         let r = await MediaLibrary.saveToLibraryAsync(res);
@@ -56,7 +50,7 @@ export default function ShareButtons({ renderRef, viewShotRef }) {
               alignItems: "center",
             }}
           >
-            <Feather name="plus" size={20} color="black" />
+            <Ionicons name="share-outline" size={20} color="black" />
           </View>
         </TouchableOpacity>
       </View>
