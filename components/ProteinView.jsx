@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import {
   Share,
   Alert,
@@ -7,18 +7,21 @@ import {
   Text,
   Dimensions,
   ActivityIndicator,
+  SafeAreaView,
 } from "react-native";
 import { GLView } from "expo-gl";
 import { Renderer } from "expo-three";
 import OrbitControlsView from "./OrbitControlsView";
 // import { ProteinDetail } from "./proteinDetail";
-import SwitchButton from "./HomeScreen/SwitchButton";
-import { AmbientLight, HalfFloatType, PerspectiveCamera, Scene, SpotLight } from "three";
+import ModeSwitchButton from "./HomeScreen/ModeSwitchButton";
+import ColorSwitchButton from "./HomeScreen/ColorSwitchButton";
+import { AmbientLight, PerspectiveCamera, Scene, SpotLight } from "three";
 import setGeometries from "../Helpers/setGeometries";
 import ViewShot from "react-native-view-shot";
-import * as MediaLibrary from "expo-media-library";
 import { LigandContext } from "../context/state";
+import ZoomButtons from "./HomeScreen/ZoomButtons";
 import BottomHalfModal from "./HomeScreen/modal";
+import ShareButtons from "./HomeScreen/ShareButtons";
 
 const raycaster = new THREE.Raycaster();
 
@@ -31,6 +34,9 @@ export default function Protein({ atoms, connects }) {
   const key = React.useRef(0);
   const value = useContext(LigandContext);
   const ligandmode = value.state.ligandmode;
+  const colorMode = value.state.colorMode;
+  const orientation = value.state.orientation;
+  const glViewRef = useRef(0);
 
   //Create Camera
   const [camera, setCamera] = useState(
@@ -47,14 +53,15 @@ export default function Protein({ atoms, connects }) {
       width,
       height,
       model: ligandmode,
-      rasmol: value,
+      rasmol: colorMode === 0 ? true : false,
     });
     group.remove(...group.children);
     group.add(...protein.children);
+    glViewRef.current = glViewRef.current + 1;
     setLoading(false);
-  }, [ligandmode]);
+  }, [ligandmode, colorMode]);
 
-  console.log("ligandmode", ligandmode);
+  // console.log("ligandmode", ligandmode);
 
   // Create scene
   const scene = new Scene();
@@ -65,21 +72,6 @@ export default function Protein({ atoms, connects }) {
     camera.lookAt(0, 0, 0);
     setCamera(camera);
   }, []);
-
-  const takeScreenShot = async () => {
-    try {
-      const res = await viewShotRef.current.capture();
-      Share.share({ url: res });
-      // await Sharing.shareAsync(res, { dialogTitle: "Share this image" });
-      let result = await MediaLibrary.requestPermissionsAsync(true);
-      if (result.status === "granted") {
-        let r = await MediaLibrary.saveToLibraryAsync(res);
-      }
-      Alert.alert("Success", "ScreenShot Successfully");
-    } catch (e) {
-      console.error(e);
-    }
-  };
 
   // Show Atom info when Tap on Atom
   const showAtomsInfo = ({ nativeEvent }) => {
@@ -127,18 +119,12 @@ export default function Protein({ atoms, connects }) {
     // setCamera(camera);
   };
 
-  const handelColor = (value) => {
-    const protein = setGeometries({
-      atoms,
-      connects,
-      width,
-      height,
-      model,
-      rasmol: value,
-    });
-    group.remove(...group.children);
-    group.add(...protein.children);
-  };
+  useEffect(() => {
+    glViewRef.current = glViewRef.current + 1;
+    setWidth(Dimensions.get("screen").width);
+    setHeight(Dimensions.get("screen").height);
+    console.log("-------------------------orientation------------------------");
+  }, [orientation]);
 
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
@@ -150,10 +136,10 @@ export default function Protein({ atoms, connects }) {
         >
           {!loading ? (
             <GLView
-              key={ligandmode}
+              key={glViewRef.current}
               style={{
-                width: Dimensions.get("screen").width,
-                height: Dimensions.get("screen").height,
+                width: orientation === "portrait" ? Dimensions.get("screen").width : Dimensions.get("screen").width,
+                height: orientation === "portrait" ? Dimensions.get("screen").height : Dimensions.get("screen").height,
               }}
               onContextCreate={async (gl) => {
                 const {
@@ -211,7 +197,6 @@ export default function Protein({ atoms, connects }) {
                   gl.endFrameEXP();
                 };
                 render();
-                console.log("render");
               }}
             />
           ) : (
@@ -219,8 +204,8 @@ export default function Protein({ atoms, connects }) {
           )}
         </OrbitControlsView>
       </ViewShot>
-      <SwitchButton
-        addedStyle={{ left: 20, top: 20 }}
+      <ModeSwitchButton
+        addedStyle={{ left: orientation === "portrait" ? 20 : 35, top: 20 }}
         items={[
           {
             name: "Full",
@@ -236,77 +221,22 @@ export default function Protein({ atoms, connects }) {
           },
         ]}
       />
-      {/* <ProteinDetail atom={selectAtom} /> */}
-      {/* <View
-        style={{
-          paddingHorizontal: 21,
-          paddingVertical: 21,
-          flexDirection: "row",
-          justifyContent: "space-between",
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          zIndex: 1,
-          backgroundColor: "white",
-          width: "100%",
-        }}
-      >
-        <TouchableOpacity onPress={() => Zoom(true)}>
-          <Text
-            style={{
-              backgroundColor: "gray",
-              textAlign: "center",
-              width: 20,
-              height: 20,
-              fontSize: 20,
-              color: "black",
-            }}
-          >
-            +
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => Zoom(false)}>
-          <Text
-            style={{
-              backgroundColor: "gray",
-              textAlign: "center",
-              width: 20,
-              height: 20,
-              fontSize: 20,
-              color: "black",
-            }}
-          >
-            -
-          </Text>
-        </TouchableOpacity>
-      </View> */}
-      {/* <View
-        style={{
-          paddingHorizontal: 21,
-          paddingVertical: 21,
-          flexDirection: "row",
-          justifyContent: "space-between",
-          position: "absolute",
-          left: 0,
-          zIndex: 1,
-          backgroundColor: "white",
-          width: "100%",
-        }}
-      >
-        <TouchableOpacity
-          onPress={() => {
-            takeScreenShot(renderRef.current);
-          }}
-        >
-          <Text>Take Snapshot</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{}} onPress={() => handelColor(true)}>
-          <Text>rasmol</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{}} onPress={() => handelColor(false)}>
-          <Text>jmol</Text>
-        </TouchableOpacity>
-      </View> */}
+      <ColorSwitchButton
+        addedStyle={{ left: orientation === "portrait" ? 20 : 35, top: 70 }}
+        items={[
+          {
+            name: "Rasmol",
+            value: 0,
+          },
+          {
+            name: "Jmol",
+            value: 1,
+          },
+        ]}
+      />
+      <ZoomButtons ZoomIn={() => Zoom(true)} ZoomOut={() => Zoom(false)} />
+      <ShareButtons renderRef={renderRef} viewShotRef={viewShotRef} />
+      {/* <BottomHalfModal atom="C" CoordX={100} CoordY={50} CoordZ={50} /> */}
     </View>
   );
 }
