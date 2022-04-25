@@ -85,20 +85,14 @@ export default function Protein({ atoms, connects }) {
     if (intersects.length > 0) {
       let element = intersects[0].object;
       if (element.info != undefined) {
+        console.log("elemet", element.info);
         Alert.alert(
           "Atom Details",
           `Element : ${element.info["name"]}
-          x : ${element.info["x"]}
-          y : ${element.info["y"]}
-          z : ${element.info["z"]}
-          color : ${element.info["color"]}
-          `,
+          x : ${parseFloat(element.info["x"].toFixed(2))}
+          y : ${parseFloat(element.info["y"].toFixed(2))}
+          z : ${parseFloat(element.info["z"].toFixed(2))}`,
           [
-            {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel",
-            },
             { text: "OK", onPress: () => console.log("OK Pressed") },
           ],
           { cancelable: false }
@@ -225,18 +219,18 @@ export default function Protein({ atoms, connects }) {
         addedStyle={{ left: orientation === "portrait" ? 20 : 35, top: 70 }}
         items={[
           {
-            name: "Rasmol",
+            name: "Color 1",
             value: 0,
           },
           {
-            name: "Jmol",
+            name: "Color 2",
             value: 1,
           },
         ]}
       />
       <ZoomButtons ZoomIn={() => Zoom(true)} ZoomOut={() => Zoom(false)} />
       <ShareButtons renderRef={renderRef} viewShotRef={viewShotRef} />
-      {/* <BottomHalfModal atom="C" CoordX={100} CoordY={50} CoordZ={50} /> */}
+      <BottomHalfModal atom="C" CoordX={100} CoordY={50} CoordZ={50} />
     </View>
   );
 }
